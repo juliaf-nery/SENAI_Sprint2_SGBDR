@@ -25,6 +25,8 @@ CREATE TABLE Produtos(
 		FOREIGN KEY(fk_categoria) REFERENCES Categorias(id_categoria)
 );
 
+ALTER TABLE Produtos AUTO_INCREMENT = 1;
+
 -- VALORES DOS CLIENTES
 CREATE TABLE Clientes(
 	id_cliente INT PRIMARY KEY AUTO_INCREMENT,
@@ -160,6 +162,23 @@ SELECT
     FROM Produtos p
     INNER JOIN Categorias c ON p.fk_categoria = c.id_categoria
     ORDER BY fk_categoria ASC, p.produto ASC;
+
+-- Mostra a quantidade de opções dos produtos, o preço médio e o total de cada categoria
+SELECT
+    c.categoria,
+    COUNT(p.id_produto) AS qtd_produtos,
+    ROUND(AVG(p.preco), 2) AS preco_medio,
+    SUM(p.quantidade) AS estoque_total
+FROM Categorias c
+INNER JOIN Produtos p ON p.fk_categoria = c.id_categoria
+GROUP BY c.id_categoria, c.categoria
+ORDER BY c.categoria;
+    
+-- Organiza produtos acima de R$15,00
+SELECT produto, preco
+FROM Produtos
+WHERE preco > 15.00
+ORDER BY preco DESC, produto ASC;
     
 -- TABELA CLIENTES
 SELECT id_cliente, nome, email FROM Clientes;
@@ -179,23 +198,6 @@ FROM Carrinho car
 INNER JOIN Clientes cli ON car.fk_cliente = cli.id_cliente
 INNER JOIN Produtos prod ON car.fk_produto = prod.id_produto
 ORDER BY cli.nome;
-
--- Organiza produtos acima de R$15,00
-SELECT produto, preco
-FROM Produtos
-WHERE preco > 15.00
-ORDER BY preco DESC, produto ASC;
-
--- Mostra a quantidade de opções dos produtos, o preço médio e o total de cada categoria
-SELECT
-    c.categoria,
-    COUNT(p.id_produto) AS qtd_produtos,
-    ROUND(AVG(p.preco), 2) AS preco_medio,
-    SUM(p.quantidade) AS estoque_total
-FROM Categorias c
-INNER JOIN Produtos p ON p.fk_categoria = c.id_categoria
-GROUP BY c.id_categoria, c.categoria
-ORDER BY c.categoria;
 
 -- CRIAÇÃO DO VIEW RESUMO DOS PEDIDOS --
 CREATE OR REPLACE VIEW vw_resumo_pedidos AS
